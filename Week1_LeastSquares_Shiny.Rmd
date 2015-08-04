@@ -1,0 +1,38 @@
+---
+title: "Week1_LeastSquares_Shiny"
+author: "Mathew Bramson"
+date: "August 3, 2015"
+output: html_document
+runtime: shiny
+---
+```{r}
+library(manipulate)
+library(ggplot2)
+suppressMessages(library(UsingR))
+data(galton)
+library(reshape)
+long <- melt(galton)
+g <- ggplot(long, aes(x= value, fill=variable)) +
+        geom_histogram(color = "black", binwidth=1) +
+        facet_grid(. ~ variable)
+g
+```
+
+```{r, echo=FALSE}
+inputPanel(
+  sliderInput("mu", "Mu", min=62, max=74, value=62, step=0.5)
+)
+```
+
+```{r}
+renderPlot({
+  mse <- mean((galton$child - input$mu)^2)
+  g <- ggplot(galton, aes(x=child)) +
+          geom_histogram(fill = "salmon", color="black", binwidth=1) +
+          geom_vline(xintercept = input$mu, size = 3) +
+          ggtitle(paste0("mu = ", input$mu, ", MSE = ", round(mse,2)))
+  g
+})
+```
+
+As we get to the center of the histogram, the Mean Squared Error goes down. We can find the palce that minimizes the MSE. The answer will be exactly at the average of the child's height. Here we can see easily that using the mean minimizes the MSE.
